@@ -1,12 +1,12 @@
 profiles:
   - aspnet5
 owner:
-  group: wcnp-ms-ngsa
+  group: TODO
 services:
   - path: kitt-service.yml
 
 deploy:
-  namespace: ms-ngsa
+  namespace: ms-TODO
   useTempNamespace: false
   stages:
     - name: azure
@@ -27,15 +27,15 @@ deploy:
             path: "/metrics"
           remoteWriteSampleLimit: 50
           whitelist:
-            - NgsaAppDuration_bucket
-            - NgsaAppDuration_count
-            - NgsaAppDuration_sum
-            - NgsaAppSummary
-            - NgsaAppSummary_count
-            - NgsaAppSummary_sum
+            - TODOAppDuration_bucket
+            - TODOAppDuration_count
+            - TODOAppDuration_sum
+            - TODOAppSummary
+            - TODOAppSummary_count
+            - TODOAppSummary_sum
 notify:
   slack:
-    channelName: "ms-ngsa-alerts"
+    channelName: "ms-TODO-alerts"
 alerts:
   slackChannel:
-    - ms-ngsa-alerts
+    - ms-TODO-alerts

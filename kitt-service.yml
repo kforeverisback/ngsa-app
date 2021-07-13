@@ -1,7 +1,7 @@
 instances:
   "01":
     build:
-      artifact: ngsa-cosmos
+      artifact: TODO-cosmos
       skip: true
     deploy:
       skip: false
@@ -14,23 +14,23 @@ instances:
               - --prometheus
               - --no-cache
               - --burst-header
-              - --burst-service=ngsa-cosmos
+              - --burst-service=TODO-cosmos
           secrets:
             file_refresh: true
             files:
             - destination: CosmosCollection
-              content: ms-ngsa/dev#CosmosCollection
+              content: ms-TODO/dev#CosmosCollection
             - destination: CosmosDatabase
-              content: ms-ngsa/dev#CosmosDatabase
+              content: ms-TODO/dev#CosmosDatabase
             - destination: CosmosKey
-              content: ms-ngsa/dev#CosmosKey
+              content: ms-TODO/dev#CosmosKey
             - destination: CosmosUrl
-              content: ms-ngsa/dev#CosmosUrl
+              content: ms-TODO/dev#CosmosUrl
             config:
               path: /app/secrets/
   "02":
     build:
-      artifact: ngsa-in-memory
+      artifact: TODO-in-memory
       skip: true
     deploy:
       skip: false
@@ -44,7 +44,7 @@ instances:
                   - key: app.kubernetes.io/name
                     operator: In
                     values:
-                    - ngsa-cosmos
+                    - TODO-cosmos
                 topologyKey: topology.kubernetes.io/zone
           container:
             args:
@@ -53,7 +53,7 @@ instances:
               - --zone={{$.kittExec.currentCluster.provider}}
               - --prometheus
               - --burst-header
-              - --burst-service=ngsa-in-memory
+              - --burst-service=TODO-in-memory
 build:
   artifact: app
 deploy:
@@ -61,7 +61,7 @@ deploy:
   helm:
     values:
       container:
-        image: strati-ms-ngsa/ngsa-app/app
+        image: strati-ms-TODO/TODO-app/app
       scaling:
         min: 1
         max: 1
