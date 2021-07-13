@@ -1,6 +1,6 @@
-# NGSA App
+# TODO_APP
 
-NGSA App is inteneded for platform testing and monitoring in one or many Kubernetes clusters and/or cloud deployments.
+TODO_APP provides a served API
 
 ## Prerequisites
 
@@ -13,9 +13,9 @@ NGSA App is inteneded for platform testing and monitoring in one or many Kuberne
 
 ## Ngsa-app Usage
 
-```
+```shell
 Usage:
-  Ngsa.Application [options]
+  TODO_APP.Application [options]
   
 Options:
   -a, --app-type <App|WebAPI>                                                      Application Type [default: App]
@@ -44,9 +44,15 @@ Options:
 
 ### Using Visual Studio Codespaces
 
-> Visual Studio Codespaces is the easiest way to evaluate ngsa. 
+> Visual Studio Codespaces is the easiest way to develop using TODO_APP
 
-TODO: Describe opening and running a codespaces
+1. Navigate to GitHub repo and desired branch
+
+2. Select the green `Code` button drop down
+
+3. Select `Open with Codespaces`
+
+4. Select existing codespace or create new codespace
 
 ### Using bash shell
 
@@ -54,27 +60,29 @@ TODO: Describe opening and running a codespaces
 
 1. Clone the repo
 
-> git clone https://github.com/retaildevcrews/ngsa-app.git
+   ```bash
+   git clone https://github.com/retaildevcrews/TODO_APP.git
+   ```
 
 2. Change to the app root directory
 
-> cd ngsa-app
+   ```bash
+   cd TODO_APP
+   ```
 
 3. Run the application in memory mode
 
-  Running the application in memory mode allows us to run the application without setting up the rest of the supporting infrastructure.
+   ```bash
+   # Running the application in memory mode allows us to run the application
+   # without setting up the rest of the supporting infrastructure.
+   dotnet run -- -m
 
-```bash
-
-# run the application
-dotnet run -- -m
-```
-
- You should see the following response:
- > Hosting environment: Production
-Content root path: /mnt/c/Users/t-anbassey/Source/ngsa-app
-Now listening on: http://[::]:8080
-Application started. Press Ctrl+C to shut down.
+   # Expected response:
+   > Hosting environment: Production
+   Content root path: /mnt/c/Users/username/Source/TODO_APP
+   Now listening on: http://[::]:8080
+   Application started. Press Ctrl+C to shut down.
+   ```
 
 ### Testing the application
 
@@ -87,14 +95,14 @@ Open a new bash shell
 # test the application
 
 # test using httpie (installed automatically in Codespaces)
-http localhost:4120/version
+http localhost:8080/version
 
 # test using curl
-curl localhost:4120/version
+curl localhost:8080/version
 
 ```
 
-Stop ngsa by typing Ctrl-C or the stop button if run via F5
+Stop ngsa-csharp-template by typing Ctrl-C or the stop button if run via F5
 
 ## Contributing
 
