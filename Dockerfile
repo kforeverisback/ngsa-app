@@ -21,13 +21,13 @@ WORKDIR /app
 
 ### create a user
 ### dotnet needs a home directory
-RUN addgroup -S ngsa && \
-    adduser -S ngsa -G ngsa && \
-    mkdir -p /home/ngsa && \
-    chown -R ngsa:ngsa /home/ngsa
+RUN addgroup -S TODO && \
+    adduser -S TODO -G TODO && \
+    mkdir -p /home/TODO && \
+    chown -R TODO:TODO /home/TODO
 
 ### run as ngsa user
-USER ngsa
+USER TODO
 
 ### copy the app
 COPY --from=build /app .
