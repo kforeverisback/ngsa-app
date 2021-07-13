@@ -1,4 +1,4 @@
-name: Build NGSA-App
+name: Build TODO-App
 
 on:
   schedule:
@@ -13,7 +13,7 @@ on:
     - 'Dockerfile'
     - '*.csproj'
     - '**.cs'
-    - '.github/workflows/ngsa.yaml'
+    - '.github/workflows/TODO.yaml'
 
 jobs:
 
@@ -21,7 +21,8 @@ jobs:
 
     runs-on: ubuntu-20.04
     env:
-      DOCKER_REPO: ghcr.io/retaildevcrews/ngsa-app
+      DOCKER_REPO: ghcr.io/retaildevcrews/TODO
+      LOAD_TEST_REPO: ghcr.io/retaildevcrews/TODO
 
     steps:
     - uses: actions/checkout@v2
@@ -40,7 +41,7 @@ jobs:
     - name: Docker Run and Test
       run: |
            
-            docker run --rm -d --name ngsacs -p 8080:8080 image --in-memory
+            docker run --rm -d --name in-memory -p 8080:8080 image --in-memory
 
             echo "Waiting for web server to start ..."
         
@@ -63,12 +64,12 @@ jobs:
                 ((wait_time=wait_time+1))
             done
 
-            docker run --rm --network=host ghcr.io/retaildevcrews/ngsa-lr:beta -s "http://localhost:8080" --max-errors 1 -f baseline.json
+            docker run --rm --network=host ghcr.io/retaildevcrews/$LOAD_TEST_REPO:TODO -s "http://localhost:8080" --max-errors 1 -f baseline.json
         
     - name: Docker Tag and Push
       run: |
         VERSION=$(docker run --rm image --version)
-        # tag the repo with :beta
-        docker tag image $DOCKER_REPO:beta
+        # tag the repo with :TODO
+        docker tag image $DOCKER_REPO:TODO
         # Push to the repo
         docker push -a $DOCKER_REPO
