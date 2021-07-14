@@ -13,10 +13,6 @@ deploy:
       refs: [master]
       target:
         - cluster_id: [eus2-dev-a2]
-    - name: gke
-      refs: [master]
-      target:
-        - cluster_id: [useast4-dev-gke01]
   helm:
     values:
       global:
