@@ -91,6 +91,23 @@ namespace Ngsa.Application
                 }
             });
 
+            // string[] headersToPropagate = { "x-request-id", "x-b3-traceid", "x-b3-spanid", "x-b3-parentspanid", "x-b3-sampled", "x-b3-flags", "x-ot-span-context", "User-Agent"};
+
+            // // Headers Propagate middleware
+            // app.Use(async (context, next) =>
+            // {
+            //     foreach (var h in headersToPropagate)
+            //     {
+            //         if (context.Request.Headers.ContainsKey(h))
+            //         {
+            //             context.Response.Headers.Add(h, context.Request.Headers[h]);
+            //         }
+            //     }
+
+            //     // Call the next delegate/middleware in the pipeline.
+            //     await next().ConfigureAwait(false);
+            // });
+
             // add middleware handlers
             app.UseRouting()
                 .UseEndpoints(ep =>

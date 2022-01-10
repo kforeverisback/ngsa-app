@@ -123,8 +123,25 @@ namespace Ngsa.Middleware
             DateTime dtStart = DateTime.Now;
             double duration = 0;
             double ttfb = 0;
-
-            CorrelationVector cv = CorrelationVectorExtensions.Extend(context);
+            Dictionary<string, object> extras = new ();
+            if (App.Config.UseIstioTraceID)
+            {
+                string[] headers = { App.Config.IstioReqHeaderName, App.Config.IstioTraceHeaderName };
+                foreach (var h in headers)
+                {
+                    if (context.Request.Headers.ContainsKey(h))
+                    {
+                        string val = context.Request.Headers[h];
+                        extras.Add(h, val);
+                    }
+                }
+            }
+            else
+            {
+                CorrelationVector cv = CorrelationVectorExtensions.Extend(context);
+                extras.Add("CVector", cv.Value);
+                extras.Add("CVectorBase", cv.GetBase());
+            }
 
             // Invoke next handler
             if (next != null)
@@ -140,11 +157,11 @@ namespace Ngsa.Middleware
             // compute request duration
             duration = Math.Round(DateTime.Now.Subtract(dtStart).TotalMilliseconds, 2);
 
-            LogRequest(context, cv, ttfb, duration);
+            LogRequest(context, ttfb, duration, extras);
         }
 
         // log the request
-        private static void LogRequest(HttpContext context, CorrelationVector cv, double ttfb, double duration)
+        private static void LogRequest(HttpContext context, double ttfb, double duration, Dictionary<string, object> extras)
         {
             DateTime dt = DateTime.UtcNow;
 
@@ -168,12 +185,17 @@ namespace Ngsa.Middleware
                     { "ClientIP", GetClientIp(context, out string xff) },
                     { "XFF", xff },
                     { "UserAgent", context.Request.Headers["User-Agent"].ToString() },
-                    { "CVector", cv.Value },
-                    { "CVectorBase", cv.GetBase() },
                     { "Category", category },
                     { "Subcategory", subCategory },
                     { "Mode", mode },
                 };
+                if (extras.Count > 0)
+                {
+                    foreach (var kv in extras)
+                    {
+                        log.TryAdd(kv.Key, kv.Value);
+                    }
+                }
 
                 if (!string.IsNullOrWhiteSpace(Zone))
                 {

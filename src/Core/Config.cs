@@ -47,6 +47,9 @@ namespace Ngsa.Application
         public string BurstServiceNs { get; set; } = string.Empty;
         public string BurstServiceHPA { get; set; } = string.Empty;
         public string UrlPrefix { get; set; }
+        public bool UseIstioTraceID { get; set; }
+        public string IstioTraceHeaderName { get; set; }
+        public string IstioReqHeaderName { get; set; }
 
         public void SetConfig(Config config)
         {
@@ -67,6 +70,9 @@ namespace Ngsa.Application
             BurstServiceEndpoint = config.BurstServiceEndpoint;
             BurstServiceNs = config.BurstServiceNs;
             BurstServiceHPA = config.BurstServiceHPA;
+            UseIstioTraceID = config.UseIstioTraceID;
+            IstioReqHeaderName = config.IstioReqHeaderName;
+            IstioTraceHeaderName = config.IstioTraceHeaderName;
             UrlPrefix = string.IsNullOrWhiteSpace(config.UrlPrefix) ? string.Empty : config.UrlPrefix;
 
             // remove trailing / if present

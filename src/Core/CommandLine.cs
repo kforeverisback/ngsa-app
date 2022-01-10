@@ -38,6 +38,8 @@ namespace Ngsa.Application
             try
             {
                 SetConfig(config);
+                Console.WriteLine($"Istio Trace Val Found: {config.UseIstioTraceID}");
+
 
                 // build the host
                 IWebHost host = BuildHost();
@@ -118,6 +120,9 @@ namespace Ngsa.Application
             root.AddOption(EnvVarOption(new string[] { "--log-level", "-l" }, "Log Level", LogLevel.Error));
             root.AddOption(EnvVarOption(new string[] { "--request-log-level", "-q" }, "Request Log Level", LogLevel.Information));
             root.AddOption(new Option<bool>(new string[] { "--dry-run" }, "Validates configuration"));
+            root.AddOption(EnvVarOption(new string[] { "--use-istio-trace-id" }, "Enable Istio Proxy provided trace and request ID instead of Correlation Vector.", false));
+            root.AddOption(EnvVarOption(new string[] { "--istio-trace-header-name" }, "Istio Header name for Trace ID.", "x-b3-traceid"));
+            root.AddOption(EnvVarOption(new string[] { "--istio-req-header-name" }, "Istio Header name for Request ID.", "x-request-id"));
 
             // validate dependencies
             root.AddValidator(ValidateDependencies);
