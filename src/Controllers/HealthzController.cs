@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -23,6 +24,7 @@ namespace Ngsa.Application.Controllers
         private readonly ILogger logger;
         private readonly ILogger<CosmosHealthCheck> hcLogger;
         private readonly IDAL dal;
+        private readonly IHttpClientFactory httpClientFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HealthzController"/> class.
@@ -30,11 +32,13 @@ namespace Ngsa.Application.Controllers
         /// <param name="logger">logger</param>
         /// <param name="dal">data access layer</param>
         /// <param name="hcLogger">HealthCheck logger</param>
-        public HealthzController(ILogger<HealthzController> logger, ILogger<CosmosHealthCheck> hcLogger)
+        /// <param name="hcf">HttpClientFactory</param>
+        public HealthzController(ILogger<HealthzController> logger, ILogger<CosmosHealthCheck> hcLogger, IHttpClientFactory hcf)
         {
             this.logger = logger;
             this.hcLogger = hcLogger;
             dal = App.Config.CosmosDal;
+            this.httpClientFactory = hcf;
         }
 
         /// <summary>
@@ -60,6 +64,18 @@ namespace Ngsa.Application.Controllers
             };
 
             BurstMetricsService.InjectBurstMetricsHeader(Response.HttpContext);
+
+            if (App.Config.UseIstioTraceID)
+            {
+                // We must have all the APIs
+                for (int i = 0; i < App.Config.PropagateApis.Count; i++)
+                {
+                    var client = httpClientFactory.CreateClient($"mock-client-{i}");
+                    // We don't care about the response body
+                    // Just testing Trace Header propagation
+                    await client.GetAsync("/");
+                }
+            }
 
             return result;
         }

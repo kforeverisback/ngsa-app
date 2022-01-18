@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
@@ -91,22 +92,33 @@ namespace Ngsa.Application
                 }
             });
 
-            // string[] headersToPropagate = { "x-request-id", "x-b3-traceid", "x-b3-spanid", "x-b3-parentspanid", "x-b3-sampled", "x-b3-flags", "x-ot-span-context", "User-Agent"};
+            if (App.Config.UseIstioTraceID)
+            {
+                var headersToPropagateToResponse = new Dictionary<string, string>()
+                {
+                    { App.Config.IstioReqHeaderName, "Istio-Request-Id" },
+                    { App.Config.IstioTraceHeaderName, "Istio-Trace-Id" }
+                };
 
-            // // Headers Propagate middleware
-            // app.Use(async (context, next) =>
-            // {
-            //     foreach (var h in headersToPropagate)
-            //     {
-            //         if (context.Request.Headers.ContainsKey(h))
-            //         {
-            //             context.Response.Headers.Add(h, context.Request.Headers[h]);
-            //         }
-            //     }
+                // Headers Propagate middleware
+                app.Use(async (context, next) =>
+                {
+                    foreach (var h in headersToPropagateToResponse)
+                    {
+                        if (context.Request.Headers.ContainsKey(h.Key))
+                        {
+                            context.Response.Headers.Add(h.Value, context.Request.Headers[h.Key]);
+                        }
+                    }
 
-            //     // Call the next delegate/middleware in the pipeline.
-            //     await next().ConfigureAwait(false);
-            // });
+                    // Call the next delegate/middleware in the pipeline.
+                    await next().ConfigureAwait(false);
+                });
+
+                // Add header propagation middleware
+                app.UseHeaderPropagation();
+            }
+
 
             // add middleware handlers
             app.UseRouting()
@@ -139,6 +151,27 @@ namespace Ngsa.Application
         /// <param name="services">The services in the web host</param>
         public static void ConfigureServices(IServiceCollection services)
         {
+            if (App.Config.UseIstioTraceID)
+            {
+                for (int i = 0; i < App.Config.PropagateApis.Count; i++)
+                {
+                    var url = $"{App.Config.PropagateApis[i]}";
+                    services.AddHttpClient($"mock-client-{i}", options => options.BaseAddress = new Uri(url)).AddHeaderPropagation();
+                }
+
+                services.AddHeaderPropagation(options =>
+                {
+                    // We need to propage all these headers when making a call to another api from here to make sure we track where our requests are going
+                    // Source: https://istio.io/latest/docs/tasks/observability/distributed-tracing/
+                    string[] headersToPropagate = { "x-request-id", "x-b3-traceid", "x-b3-spanid", "x-b3-parentspanid", "x-b3-sampled", "x-b3-flags", "x-ot-span-context"};
+                    // Propagate X-INBOUND-HEADER if it is present
+                    foreach (var item in headersToPropagate)
+                    {
+                        options.Headers.Add(item);
+                    }
+                });
+            }
+
             // set json serialization defaults and api behavior
             services.AddControllers()
                 .AddJsonOptions(options =>

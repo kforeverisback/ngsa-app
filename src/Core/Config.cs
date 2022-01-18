@@ -3,6 +3,7 @@
 
 using Microsoft.Extensions.Logging;
 using Ngsa.Application.DataAccessLayer;
+using System.Collections.Generic;
 
 namespace Ngsa.Application
 {
@@ -50,6 +51,7 @@ namespace Ngsa.Application
         public bool UseIstioTraceID { get; set; }
         public string IstioTraceHeaderName { get; set; }
         public string IstioReqHeaderName { get; set; }
+        public List<string> PropagateApis { get; set; }
 
         public void SetConfig(Config config)
         {
@@ -73,6 +75,7 @@ namespace Ngsa.Application
             UseIstioTraceID = config.UseIstioTraceID;
             IstioReqHeaderName = config.IstioReqHeaderName;
             IstioTraceHeaderName = config.IstioTraceHeaderName;
+            PropagateApis = config.PropagateApis;
             UrlPrefix = string.IsNullOrWhiteSpace(config.UrlPrefix) ? string.Empty : config.UrlPrefix;
 
             // remove trailing / if present

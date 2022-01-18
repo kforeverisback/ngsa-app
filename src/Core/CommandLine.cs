@@ -123,11 +123,56 @@ namespace Ngsa.Application
             root.AddOption(EnvVarOption(new string[] { "--use-istio-trace-id" }, "Enable Istio Proxy provided trace and request ID instead of Correlation Vector.", false));
             root.AddOption(EnvVarOption(new string[] { "--istio-trace-header-name" }, "Istio Header name for Trace ID.", "x-b3-traceid"));
             root.AddOption(EnvVarOption(new string[] { "--istio-req-header-name" }, "Istio Header name for Request ID.", "x-request-id"));
+            root.AddOption(new Option<List<string>>(new string[] { "--propagate-apis" }, ParseStringList, true, "API Server(s) to call"));
 
             // validate dependencies
             root.AddValidator(ValidateDependencies);
 
             return root;
+        }
+
+        /// <summary>
+        /// Parses the string list command line arg (--files).
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>The Argument Value.</returns>
+        public static List<string> ParseStringList(ArgumentResult result)
+        {
+            string name = result.Parent?.Symbol.Name.ToUpperInvariant().Replace('-', '_');
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                result.ErrorMessage = "result.Parent is null";
+                return null;
+            }
+
+            List<string> val = new ();
+
+            if (result.Tokens.Count == 0)
+            {
+                string env = Environment.GetEnvironmentVariable(name);
+
+                if (string.IsNullOrWhiteSpace(env))
+                {
+                    result.ErrorMessage = $"--{result.Argument.Name} is a required parameter";
+                    return null;
+                }
+
+                string[] files = env.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (string f in files)
+                {
+                    val.Add(f.Trim());
+                }
+            }
+            else
+            {
+                for (int i = 0; i < result.Tokens.Count; i++)
+                {
+                    val.Add(result.Tokens[i].Value.Trim());
+                }
+            }
+
+            return val;
         }
 
         // validate combinations of parameters
