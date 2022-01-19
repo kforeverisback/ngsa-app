@@ -151,11 +151,14 @@ namespace Ngsa.Application
         /// <param name="services">The services in the web host</param>
         public static void ConfigureServices(IServiceCollection services)
         {
-            if (App.Config.UseIstioTraceID)
+            if (App.Config.UseIstioTraceID && App.Config.PropagateApis != null)
             {
+                // Default http client for DI
+                services.AddHttpClient();
                 for (int i = 0; i < App.Config.PropagateApis.Count; i++)
                 {
                     var url = $"{App.Config.PropagateApis[i]}";
+                    Console.WriteLine(url);
                     services.AddHttpClient($"mock-client-{i}", options => options.BaseAddress = new Uri(url)).AddHeaderPropagation();
                 }
 

@@ -123,7 +123,7 @@ namespace Ngsa.Application
             root.AddOption(EnvVarOption(new string[] { "--use-istio-trace-id" }, "Enable Istio Proxy provided trace and request ID instead of Correlation Vector.", false));
             root.AddOption(EnvVarOption(new string[] { "--istio-trace-header-name" }, "Istio Header name for Trace ID.", "x-b3-traceid"));
             root.AddOption(EnvVarOption(new string[] { "--istio-req-header-name" }, "Istio Header name for Request ID.", "x-request-id"));
-            root.AddOption(new Option<List<string>>(new string[] { "--propagate-apis" }, ParseStringList, true, "API Server(s) to call"));
+            root.AddOption(new Option<List<string>>(new string[] { "--propagate-apis" }, ParseStringList, false, "API Server(s) to call"));
 
             // validate dependencies
             root.AddValidator(ValidateDependencies);

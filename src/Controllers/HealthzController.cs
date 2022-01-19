@@ -65,7 +65,7 @@ namespace Ngsa.Application.Controllers
 
             BurstMetricsService.InjectBurstMetricsHeader(Response.HttpContext);
 
-            if (App.Config.UseIstioTraceID)
+            if (App.Config.UseIstioTraceID && App.Config.PropagateApis != null)
             {
                 // We must have all the APIs
                 for (int i = 0; i < App.Config.PropagateApis.Count; i++)
@@ -73,7 +73,7 @@ namespace Ngsa.Application.Controllers
                     var client = httpClientFactory.CreateClient($"mock-client-{i}");
                     // We don't care about the response body
                     // Just testing Trace Header propagation
-                    await client.GetAsync("/");
+                    await client.GetAsync("/healthz");
                 }
             }
 
